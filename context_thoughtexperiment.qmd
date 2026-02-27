@@ -1,0 +1,74 @@
+## Create Thought Experiment for Confounding Effect of Scoreline
+
+```{r}
+library(tidyverse)
+library(knitr)
+
+min_goal <- 20
+
+df_hypo <- data.frame(
+  min = 1:91,
+  PI = c(
+    c(rnorm(3, 0, 4), rnorm(2, 8, 2), rnorm(15, 18, 3), rnorm(15, 0, 1), rnorm(25, -9, 4), rnorm(31, -7, 5)),
+    c(rnorm(3, 0, 3), rnorm(2, -4, 3), rnorm(15, -10, 2), rnorm(15, 0, 2), rnorm(25, 6, 4), rnorm(31, 5, 5))
+  ),
+  Team = c(rep("Team A", 91), rep("Team B", 91))
+#  PI_diff = c(rnorm(15, 20, 5), rnorm(15, 0, 7), rnorm(30, -8, 9), rnorm(31, -10, 8))
+) %>%
+mutate(
+    Status = factor(ifelse(min <= min_goal, "Pre Goal", "Post Goal"), levels=c("Pre Goal", "Post Goal"))
+)
+```
+
+```{r}
+#| label: fig-match-course
+#| fig-cap: "Illustration of a hypothetical evolution of a *Performance Indicator* over the course of a match. The solid black line indicates the evolution of an arbitrary *Performance Indicator*, expressed as the difference in performance between two teams, from the perspective of the home team. Vertical lines indicate the time frames of goals being scored. Solid grey vertical lines indicate goals for the home team, dashed black lines indicate goals for the away team. 
+#| 
+#| Team A outperforms team B in parameter $X$. 
+#| Team A scores in 20<sup>th</sup> minute
+#| Team A performs worse afterwards
+#| Team A goes ahead to win the match 1:0"
+
+
+
+#df_hypo %>% ggplot(aes(x=min)) +
+#  geom_hline(aes(yintercept=0), col='lightgrey', linetype='dashed') +
+#  geom_line(aes(y=PI_diff), size=1) +
+#  geom_vline(aes(xintercept=15), linetype = "dashed", col='grey', size=1) + 
+#  geom_vline(aes(xintercept=85), linetype = "dashed", col='black', size=1) + 
+#  scale_x_continuous(breaks = seq(0,95,5)) + 
+#  xlab("Time of match [min]") + 
+#  ylab("Difference in PI [AU]")
+
+max_pi <- max(df_hypo$PI)
+ylims <- c(min(df_hypo$PI), max_pi)
+
+p_thoughtexp <- df_hypo %>%
+    ggplot(aes(x = min, y = PI, color = Team)) + 
+        geom_line(, linewidth = .7) +
+        scale_color_manual(values = c("Team A" = "darkgrey", "Team B" = "black")) +
+        geom_hline(yintercept=0, col="black", linetype="dashed") + 
+        geom_vline(xintercept = 20, col="black", linewidth=1.5, #linetype="dashed"
+                  ) + 
+        annotate(
+            "text",
+            x=min_goal + 10,
+            y=max_pi-5,
+            label="Goal Team A", #fill="darkgrey",
+            col="black", size=5) +
+    xlab("Minutes played") +
+    ylab("Arbitrary Performance Indicator [AU]") +
+    coord_cartesian(xlim=c(1,91), ylim=ylims, expand=F) +
+    scale_x_continuous(
+        breaks = seq(0,90,15)
+        #labels = function(x) ifelse(x %% 5 == 0, as.character(x), "")
+        ) +
+    theme(
+      axis.title.x = element_text(size = 12),
+      axis.title.y = element_text(size = 12),
+      axis.text.x = element_text(size = 12),
+      axis.text.y = element_text(size = 12)
+        )
+
+p_thoughtexp
+```
