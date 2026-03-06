@@ -72,3 +72,39 @@ p_thoughtexp <- df_hypo %>%
 
 p_thoughtexp
 ```
+
+```{r}
+#| label: tbl-thought-exp
+#| tbl-cap: "Descriptive statistics for the arbitrary Performance Indicator in the thought experiment."
+
+df_pregoal <- df_hypo %>%
+    filter(Status == "Pre Goal") %>%
+    group_by(Team) %>%
+    summarise(
+        mean_PI = mean(PI)
+        ) %>%
+    mutate(level_of_obs = "Pre Goal")
+#
+
+df_postgoal <- df_hypo %>%
+filter(Status == "Post Goal") %>%
+    group_by(Team) %>%
+    summarise(
+        mean_PI = mean(PI)
+        ) %>%
+    mutate(level_of_obs = "Post Goal")
+
+
+df_fullmatch <- df_hypo %>%
+    group_by(Team) %>%
+    summarise(
+        mean_PI = mean(PI)
+        ) %>%
+    mutate(level_of_obs = "Whole Match")
+
+df_descriptives <- rbind(df_pregoal, df_postgoal, df_fullmatch) %>%
+    pivot_wider(names_from = "level_of_obs", values_from = "mean_PI") %>%
+    kable(digits = 1)
+
+df_descriptives
+```
