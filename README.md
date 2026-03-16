@@ -19,5 +19,4 @@ Processed datasets at each aggregation level are available in the `data/` subfol
 | `df_seasonlevel.csv` | One row per team, season-level aggregates |
 | `df_matchlevel.csv` | One row per team per match |
 | `df_scorelinelevel.csv` | One row per scoreline segment per match |
-| `df_possessionlevel.csv` | One row per ball possession sequence |
 | `df_coefs_probit.csv` | Model coefficients and confidence intervals (all indicators × all levels) |
